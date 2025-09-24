@@ -1,277 +1,171 @@
 # Freqtrade Trading Bot
 
-A comprehensive Freqtrade trading bot setup for automated cryptocurrency trading on Binance with Telegram notifications, Docker deployment, and CI/CD pipeline.
+Automated cryptocurrency trading bot for Binance with complete CI/CD and VPS deployment.
+
+## Architecture
+
+```mermaid
+graph TB
+    subgraph "Trading System"
+        A[Freqtrade Bot] --> B[Binance API]
+        A --> C[Telegram Bot]
+        A --> D[RsiMaStrategy]
+    end
+    
+    subgraph "Infrastructure"
+        E[CircleCI] --> F[OVH VPS]
+        G[Docker] --> A
+        H[Systemd] --> G
+    end
+    
+    subgraph "Monitoring"
+        C --> I[Telegram Notifications]
+        A --> J[Logs & Metrics]
+    end
+    
+    B -.-> K[Market Data]
+    D --> L[Technical Indicators]
+```
 
 ## Features
 
-- **Exchange**: Binance (Spot Trading)  
-- **Notifications**: Telegram integration
-- **Strategy**: RsiMaStrategy (RSI + Moving Average)
-- **Deployment**: Docker Compose for local development, systemd service for VPS
-- **CI/CD**: CircleCI pipeline with automated testing and deployment
-- **VPS**: Optimized for OVH VPS SSD 1 (1 vCPU, 2 GB RAM, 20 GB SSD)
+- **Exchange**: Binance Spot | **Notifications**: Telegram | **Strategy**: RSI+MA+MACD+Volume
+- **Local**: Docker Compose | **Production**: systemd service | **CI/CD**: CircleCI pipeline
 
 ## Quick Start
 
-### Local Development
+```mermaid
+graph LR
+    A[Local Development] --> B[docker-compose up -d]
+    C[VPS Deployment] --> D[./deployment/setup-vps.sh]
+    D --> E[Configure secrets]
+    E --> F[git push origin main]
+    F --> G[CircleCI Auto-Deploy]
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd AI-Trading
-   ```
-
-2. **Configure the bot**
-   ```bash
-   # Copy and edit configuration files
-   cp config.dryrun.json config.local.json
-   # Edit config.local.json with your API keys (for testing)
-   ```
-
-3. **Run with Docker Compose**
-   ```bash
-   docker-compose up -d
-   ```
-
-4. **Check logs**
-   ```bash
-   docker-compose logs -f freqtrade
-   ```
-
-### VPS Deployment
-
-1. **Setup VPS** (Run once on new VPS)
-   ```bash
-   # Copy setup script to VPS and run
-   scp deployment/setup-vps.sh user@your-vps:/tmp/
-   ssh user@your-vps "chmod +x /tmp/setup-vps.sh && sudo /tmp/setup-vps.sh"
-   ```
-
-2. **Configure secrets**
-   ```bash
-   # On VPS, create .env file
-   sudo cp /home/freqtrade/.env.template /home/freqtrade/.env
-   sudo nano /home/freqtrade/.env  # Add your actual API keys
-   ```
-
-3. **Deploy** (Done automatically via CircleCI or manually)
-   ```bash
-   ./deployment/deploy.sh
-   ```
+**Local**: `make quick-start` or `docker-compose up -d`  
+**VPS**: Run `deployment/setup-vps.sh` → Configure secrets → Push to main branch
 
 ## Configuration
 
-### Configuration Files
-
-- `config.dryrun.json` - Dry-run configuration for testing
-- `config.live.template.json` - Live trading template (DO NOT put real API keys here)
-- `pairs.json` - Trading pairs configuration
-
-### Environment Variables (Secrets)
-
-Set these in your CircleCI Context `freqtrade-secrets`:
-
-```bash
-# Binance API
-BINANCE_API_KEY=your_api_key
-BINANCE_API_SECRET=your_api_secret
-
-# Telegram Bot
-TELEGRAM_TOKEN=your_bot_token
-TELEGRAM_CHAT_ID=your_chat_id
-
-# VPS Access
-OVH_SSH_KEY=base64_encoded_private_key
-OVH_HOST=your.vps.ip
-OVH_USER=freqtrade
-OVH_SSH_FINGERPRINT=ssh_key_fingerprint
+```mermaid
+graph TD
+    A[config.dryrun.json] --> B[Local Testing]
+    C[config.live.template.json] --> D[Production]
+    E[pairs.json] --> F[Trading Pairs]
+    G[CircleCI Context] --> H[Secrets]
+    
+    subgraph "Secrets"
+        H --> I[BINANCE_API_KEY/SECRET]
+        H --> J[TELEGRAM_TOKEN/CHAT_ID]
+        H --> K[OVH_SSH_KEY/HOST/USER]
+    end
 ```
+
+**Files**: `config.dryrun.json` (testing) | `config.live.template.json` (production) | `pairs.json` (pairs)  
+**Secrets**: Set in CircleCI Context `freqtrade-secrets`
 
 ## Strategy: RsiMaStrategy
 
-A simple starter strategy that combines:
-- **RSI (Relative Strength Index)**: Identifies oversold/overbought conditions
-- **Moving Average**: Confirms trend direction
-- **Volume**: Ensures sufficient market activity
-- **MACD**: Additional momentum confirmation
-- **Bollinger Bands**: Volatility and price level analysis
+```mermaid
+graph TB
+    subgraph "Entry Signals"
+        A[RSI < 30] --> E[BUY]
+        B[Price > SMA] --> E
+        C[Volume > 1.2x avg] --> E
+        D[MACD > Signal] --> E
+    end
+    
+    subgraph "Exit Signals"
+        F[RSI > 70] --> I[SELL]
+        G[Price < SMA] --> I
+        H[MACD < Signal] --> I
+    end
+    
+    subgraph "Risk Management"
+        J[Stop Loss: -5%] --> K[Max Trades: 3]
+        L[ROI: 4%→2%→1%] --> K
+    end
+```
 
-### Entry Conditions
-- RSI < 30 (oversold)
-- Price > 20-period SMA (uptrend)
-- Volume > 1.2x average volume
-- MACD > Signal line
-- Price below upper Bollinger Band
-
-### Exit Conditions
-- RSI > 70 (overbought)
-- Price < 20-period SMA (downtrend)
-- MACD < Signal line
-- Price hits upper Bollinger Band
-
-### Risk Management
-- Stop Loss: -5%
-- Take Profit: ROI table (4% immediate, 2% at 30min, 1% at 60min)
-- Max open trades: 3
+**Indicators**: RSI + SMA + Volume + MACD + Bollinger Bands  
+**Risk**: -5% stop loss, ROI table, max 3 trades
 
 ## Development
 
-### Running Tests
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run linting
-black user_data/strategies/
-flake8 user_data/strategies/
-
-# Validate strategy
-python -c "from user_data.strategies.RsiMaStrategy import RsiMaStrategy; print('Strategy valid')"
-
-# Run backtest
-freqtrade backtesting --config config.dryrun.json --strategy RsiMaStrategy
+```mermaid
+graph LR
+    A[make validate] --> B[make build]
+    B --> C[make up]
+    C --> D[make logs]
+    
+    E[Code Changes] --> F[make lint]
+    F --> G[make test]
+    G --> H[git push]
 ```
 
-### Project Structure
-
-```
-AI-Trading/
-├── .circleci/
-│   └── config.yml              # CircleCI pipeline
-├── deployment/
-│   ├── deploy.sh               # Deployment script
-│   ├── freqtrade.service       # Systemd service
-│   └── setup-vps.sh            # VPS setup script
-├── user_data/
-│   └── strategies/
-│       └── RsiMaStrategy.py    # Trading strategy
-├── config.dryrun.json          # Dry-run config
-├── config.live.template.json   # Live config template
-├── pairs.json                  # Trading pairs
-├── docker-compose.yml          # Local development
-├── docker-compose.prod.yml     # Production deployment
-├── Dockerfile                  # Docker image
-├── requirements.txt            # Python dependencies
-└── readme.md                   # This file
-```
+**Commands**: `make quick-start` | `make validate` | `make logs` | `make down`
 
 ## CI/CD Pipeline
 
-The CircleCI pipeline includes:
-
-1. **Lint & Test**: Code quality checks and strategy validation
-2. **Backtest**: Run backtests to validate strategy performance
-3. **Build Docker**: Build and test Docker image
-4. **Deploy**: Deploy to VPS (main branch only)
-
-### Pipeline Stages
-
-```yaml
-lint-and-test → backtest → build-docker → deploy
-                    ↓           ↓           ↓
-                 Parallel   Parallel    Main only
+```mermaid
+graph LR
+    A[Git Push] --> B[CircleCI]
+    B --> C[Lint & Test]
+    B --> D[Backtest]
+    B --> E[Build Docker]
+    C --> F[Deploy to VPS]
+    D --> F
+    E --> F
+    F --> G[Systemd Restart]
+    
+    style F fill:#e1f5fe
+    style G fill:#e8f5e8
 ```
 
 ## Monitoring
 
-### Local Monitoring
-
-- **Logs**: `docker-compose logs -f freqtrade`
-- **FreqUI**: Access at http://localhost:8081 (if enabled)
-
-### VPS Monitoring
-
-- **Service Status**: `sudo systemctl status freqtrade`
-- **Logs**: `journalctl -u freqtrade -f`
-- **Docker Status**: `sudo docker ps`
-
-### Telegram Notifications
-
-The bot will send notifications for:
-- Trade entries and exits
-- Errors and warnings  
-- Daily summaries
-- System status
-
-## Security Best Practices
-
-1. **Never commit API keys** - Use environment variables and CircleCI Context
-2. **Use dedicated API keys** with minimal permissions (Spot trading only)
-3. **Enable 2FA** on all exchange and service accounts
-4. **Regular monitoring** of trades and system health
-5. **Start with small amounts** and dry-run testing
-
-## Troubleshooting
-
-### Common Issues
-
-**Docker build fails**
-```bash
-# Clear Docker cache
-docker system prune -a
-docker-compose build --no-cache
+```mermaid
+graph TB
+    A[Trading Bot] --> B[Telegram Notifications]
+    A --> C[System Logs]
+    A --> D[FreqUI Dashboard]
+    
+    B --> E[Trade Entries/Exits]
+    B --> F[Errors & Warnings]
+    B --> G[Daily Summaries]
+    
+    C --> H[journalctl -u freqtrade -f]
+    D --> I[http://localhost:8081]
 ```
 
-**Strategy import errors**
-```bash
-# Check Python syntax
-python -m py_compile user_data/strategies/RsiMaStrategy.py
+**Local**: `make logs` | **VPS**: `journalctl -u freqtrade -f` | **UI**: http://localhost:8081
+
+## Security & Troubleshooting
+
+```mermaid
+graph TB
+    subgraph "Security"
+        A[Environment Variables] --> B[CircleCI Context]
+        C[Minimal API Permissions] --> D[Spot Trading Only]
+        E[2FA Enabled] --> F[Regular Monitoring]
+    end
+    
+    subgraph "Common Issues"
+        G[Docker Build Fails] --> H[docker system prune -a]
+        I[API Errors] --> J[Check Keys & Whitelist]
+        K[VPS Deploy Fails] --> L[Check SSH & Service]
+    end
 ```
 
-**VPS deployment fails**
-```bash
-# Check SSH connectivity
-ssh user@your-vps "echo 'SSH working'"
+**Security**: Environment variables only | Minimal API permissions | 2FA enabled  
+**Cost**: OVH VPS SSD 1 (~€3-€5/month) | 1 vCPU, 2GB RAM, 20GB SSD
 
-# Check service status
-ssh user@your-vps "sudo systemctl status freqtrade"
-```
+## ⚠️ Disclaimer
 
-**API connection errors**
-- Verify API keys are correct
-- Check IP whitelist on Binance
-- Ensure sufficient permissions
-
-### Logs
-
-- **Local**: `docker-compose logs freqtrade`
-- **VPS**: `journalctl -u freqtrade -f`
-- **Freqtrade**: Check `user_data/logs/` directory
-
-## Cost Estimation
-
-### OVH VPS SSD 1
-- **Specs**: 1 vCPU, 2 GB RAM, 20 GB SSD
-- **Cost**: ~€3-€5/month
-- **Performance**: Suitable for 1-3 trading pairs with 5m timeframe
-
-### Additional Costs
-- **Domain** (optional): ~€10/year
-- **Monitoring** (optional): Various free/paid options
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and test locally
-4. Submit a pull request
-
-## Disclaimer
-
-⚠️ **Trading cryptocurrencies involves significant risk**. This bot is for educational purposes. Always:
-- Test thoroughly with dry-run mode
-- Start with small amounts
-- Monitor performance closely
-- Understand the risks involved
-- Never invest more than you can afford to lose
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+**Trading cryptocurrencies involves significant risk**. Educational purposes only.  
+Always test with dry-run mode and small amounts.
 
 ## Support
 
-- **Documentation**: [Freqtrade Docs](https://www.freqtrade.io/)
-- **Community**: [Freqtrade Discord](https://discord.gg/p7nuUNVfP7)
-- **Issues**: Use GitHub Issues for bug reports and feature requests
+📚 [Freqtrade Docs](https://www.freqtrade.io/) | 💬 [Discord](https://discord.gg/p7nuUNVfP7) | 🐛 GitHub Issues
