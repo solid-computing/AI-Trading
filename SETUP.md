@@ -5,11 +5,22 @@ This guide provides step-by-step instructions for the manual configuration neede
 ## Prerequisites
 
 Before starting the setup, ensure you have:
-- A VPS (OVH recommended, minimum 2GB RAM, 20GB SSD)
+
+### Option A: Terraform Infrastructure (Recommended)
+- OVH Public Cloud account
+- Terraform >= 1.0 installed
+- Basic command line knowledge
+- SSH key pair
+
+### Option B: Manual VPS Setup
+- A VPS (OVH recommended, minimum 2GB RAM, 20GB SSD)  
+- SSH access to the VPS
+- Basic command line knowledge
+
+### For Both Options
 - Binance account with API access
 - Telegram bot token
-- CircleCI account
-- Basic command line knowledge
+- CircleCI account (for automated deployment)
 
 ## 🔐 1. API Keys & Credentials Setup
 
@@ -51,9 +62,74 @@ Before starting the setup, ensure you have:
    TELEGRAM_CHAT_ID=your_chat_id_here
    ```
 
-## 🖥️ 2. VPS Setup
+## 🏗️ 2. Infrastructure Setup (Choose One)
 
-### 2.1 Server Preparation
+### Option A: Terraform Infrastructure (Recommended)
+
+1. **Install Terraform**
+   ```bash
+   # Ubuntu/Debian
+   wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+   sudo apt update && sudo apt install terraform
+   
+   # macOS
+   brew install terraform
+   ```
+
+2. **Get OVH API Keys**
+   - Go to https://api.ovh.com/createToken/
+   - Application name: "AI Trading Bot"
+   - Rights: `GET/POST/PUT/DELETE /cloud/*`
+   - Save: Application Key, Application Secret, Consumer Key
+
+3. **Configure Terraform Variables**
+   ```bash
+   cd terraform
+   cp terraform.tfvars.example terraform.tfvars
+   nano terraform.tfvars
+   ```
+   
+   Fill in your values:
+   ```hcl
+   ovh_application_key    = "your_ovh_application_key"
+   ovh_application_secret = "your_ovh_application_secret"
+   ovh_consumer_key      = "your_ovh_consumer_key"
+   ovh_project_id        = "your_ovh_project_id"
+   openstack_username     = "your_ovh_username"
+   openstack_password     = "your_ovh_password"
+   ```
+
+4. **Generate SSH Key (if needed)**
+   ```bash
+   ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -C "ai-trading-bot"
+   ```
+
+5. **Deploy Infrastructure**
+   ```bash
+   # From project root
+   make terraform-deploy
+   
+   # Or manually:
+   cd terraform
+   ./deploy.sh
+   ```
+
+6. **Note the Outputs**
+   ```bash
+   # Get connection details
+   cd terraform && terraform output
+   
+   # Save these for deployment:
+   export OVH_HOST=$(terraform output -raw public_ip)
+   export OVH_USER=freqtrade
+   ```
+
+### Option B: Manual VPS Setup
+
+## 🖥️ 3. Manual VPS Setup (Alternative to Terraform)
+
+### 3.1 Server Preparation
 
 1. **Connect to your VPS**
    ```bash
@@ -90,7 +166,7 @@ Before starting the setup, ensure you have:
    sudo chmod 600 /home/freqtrade/.env
    ```
 
-### 2.2 SSH Key Setup
+### 3.2 SSH Key Setup
 
 1. **Generate SSH key for CircleCI**
    ```bash
@@ -110,16 +186,16 @@ Before starting the setup, ensure you have:
    # Copy this output for CircleCI environment variables
    ```
 
-## 🔄 3. CircleCI Configuration
+## 🔄 4. CircleCI Configuration
 
-### 3.1 Create Context
+### 4.1 Create Context
 
 1. **Go to CircleCI**
    - Navigate to Organization Settings → Contexts
    - Click "Create Context"
    - Name it: `freqtrade-secrets`
 
-### 3.2 Add Environment Variables
+### 4.2 Add Environment Variables
 
 Add the following variables to the `freqtrade-secrets` context:
 
@@ -134,7 +210,7 @@ Add the following variables to the `freqtrade-secrets` context:
 | `OVH_SSH_KEY` | Base64 encoded private key | SSH authentication |
 | `OVH_SSH_FINGERPRINT` | SSH key fingerprint | Key identification |
 
-### 3.3 Get SSH Fingerprint
+### 4.3 Get SSH Fingerprint
 
 ```bash
 # On your local machine
@@ -142,7 +218,7 @@ ssh-keygen -lf ~/.ssh/id_rsa_circleci
 # Copy the fingerprint (format: SHA256:xxxxx)
 ```
 
-## 🧪 4. Local Testing
+## 🧪 5. Local Testing
 
 ### 4.1 Environment Setup
 
@@ -174,7 +250,7 @@ ssh-keygen -lf ~/.ssh/id_rsa_circleci
    make status
    ```
 
-## 📋 5. Configuration Files
+## 📋 6. Configuration Files
 
 ### 5.1 Trading Configuration
 
@@ -191,9 +267,21 @@ Edit these files as needed:
 make update-config
 ```
 
-## 🚀 6. Deployment Process
+## 🚀 7. Deployment Process
 
-### 6.1 Manual Deployment
+### 7.1 Terraform Deployment (Recommended)
+
+```bash
+# Deploy application to Terraform-provisioned infrastructure
+make deploy-terraform
+
+# Or manually with environment variables:
+export OVH_HOST=$(cd terraform && terraform output -raw public_ip)
+export OVH_USER=freqtrade
+./deployment/deploy-terraform.sh
+```
+
+### 7.2 Manual Deployment
 
 ```bash
 # Deploy to VPS manually
@@ -202,7 +290,7 @@ export OVH_USER=root
 make deploy
 ```
 
-### 6.2 Automatic Deployment
+### 7.3 Automatic Deployment
 
 1. **Push to main branch**
    ```bash
@@ -222,7 +310,7 @@ make deploy
    journalctl -u freqtrade -f
    ```
 
-## 🛠️ 7. Post-Deployment Verification
+## 🛠️ 8. Post-Deployment Verification
 
 ### 7.1 Service Status
 
@@ -253,7 +341,7 @@ journalctl -u freqtrade -f
 sudo docker exec -it freqtrade_freqtrade_1 freqtrade show_trades --config config.live.json
 ```
 
-## ⚠️ 8. Security Checklist
+## ⚠️ 9. Security Checklist
 
 - [ ] API keys have minimal permissions (no withdrawals)
 - [ ] 2FA enabled on Binance account
@@ -262,7 +350,7 @@ sudo docker exec -it freqtrade_freqtrade_1 freqtrade show_trades --config config
 - [ ] Environment variables properly secured
 - [ ] Regular monitoring enabled
 
-## 🔧 9. Troubleshooting
+## 🔧 10. Troubleshooting
 
 ### Common Issues
 
@@ -293,7 +381,7 @@ sudo docker exec -it freqtrade_freqtrade_1 freqtrade show_trades --config config
 - **VPS**: `journalctl -u freqtrade -f`
 - **CircleCI**: Check pipeline logs in dashboard
 
-## 📞 Support
+## 📞 11. Support
 
 - 📚 [Freqtrade Documentation](https://www.freqtrade.io/)
 - 💬 [Discord Community](https://discord.gg/p7nuUNVfP7)

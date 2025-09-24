@@ -1,7 +1,7 @@
 # Makefile for Freqtrade Trading Bot
 # Provides convenient commands for development, testing, and deployment
 
-.PHONY: help validate build up down logs clean test lint deploy setup-telegram
+.PHONY: help validate build up down logs clean test lint deploy deploy-terraform terraform-init terraform-plan terraform-apply terraform-destroy terraform-output terraform-deploy setup-telegram
 
 # Default target
 help:
@@ -26,6 +26,15 @@ help:
 	@echo ""
 	@echo "Deployment:"
 	@echo "  deploy        - Deploy to VPS (requires environment variables)"
+	@echo "  deploy-terraform - Deploy to Terraform-provisioned VPS"
+	@echo ""
+	@echo "Infrastructure (Terraform):"
+	@echo "  terraform-deploy  - Deploy infrastructure with Terraform"
+	@echo "  terraform-init    - Initialize Terraform"
+	@echo "  terraform-plan    - Plan Terraform deployment"
+	@echo "  terraform-apply   - Apply Terraform configuration"
+	@echo "  terraform-output  - Show Terraform outputs"
+	@echo "  terraform-destroy - Destroy Terraform infrastructure"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make validate"
@@ -92,6 +101,39 @@ deploy:
 	fi
 	@chmod +x deployment/deploy.sh
 	@./deployment/deploy.sh
+
+# Enhanced deployment with Terraform support
+deploy-terraform:
+	@echo "🚀 Deploying to Terraform-provisioned VPS..."
+	@chmod +x deployment/deploy-terraform.sh
+	@./deployment/deploy-terraform.sh
+
+# Terraform infrastructure management
+terraform-init:
+	@echo "🏗️ Initializing Terraform..."
+	@cd terraform && terraform init
+
+terraform-plan:
+	@echo "📋 Planning Terraform deployment..."
+	@cd terraform && terraform plan
+
+terraform-apply:
+	@echo "🚀 Applying Terraform configuration..."
+	@cd terraform && terraform apply
+
+terraform-destroy:
+	@echo "💥 Destroying Terraform infrastructure..."
+	@cd terraform && terraform destroy
+
+terraform-output:
+	@echo "📊 Terraform outputs..."
+	@cd terraform && terraform output
+
+# Terraform deployment helper
+terraform-deploy:
+	@echo "🏗️ Deploying infrastructure with Terraform..."
+	@chmod +x terraform/deploy.sh
+	@cd terraform && ./deploy.sh
 
 # Development helpers
 install-dev:

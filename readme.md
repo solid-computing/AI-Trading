@@ -16,6 +16,7 @@ graph TB
         E[CircleCI] --> F[OVH VPS]
         G[Docker] --> A
         H[Systemd] --> G
+        T[Terraform] --> F
     end
     
     subgraph "Monitoring"
@@ -31,22 +32,28 @@ graph TB
 
 - **Exchange**: Binance Spot | **Notifications**: Telegram | **Strategy**: RSI+MA+MACD+Volume
 - **Local**: Docker Compose | **Production**: systemd service | **CI/CD**: CircleCI pipeline
+- **Infrastructure**: Terraform for OVH Cloud | **Deployment**: Automated with make commands
 
 ## Quick Start
 
 ```mermaid
 graph LR
     A[Local Development] --> B[docker-compose up -d]
-    C[VPS Deployment] --> D[./deployment/setup-vps.sh]
-    D --> E[Configure secrets]
-    E --> F[git push origin main]
-    F --> G[CircleCI Auto-Deploy]
+    C[Infrastructure] --> D[make terraform-deploy]
+    D --> E[Configure terraform.tfvars]
+    E --> F[make deploy-terraform]
+    
+    G[Traditional VPS] --> H[./deployment/setup-vps.sh]
+    H --> I[Configure secrets]
+    I --> J[git push origin main]
+    J --> K[CircleCI Auto-Deploy]
 ```
 
-**📋 [Complete Setup Guide](./SETUP.md)** | **✅ [Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)**
+**📋 [Complete Setup Guide](./SETUP.md)** | **✅ [Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)** | **🏗️ [Terraform Guide](./terraform/README.md)**
 
 **Local**: `make quick-start` or `docker-compose up -d`  
-**VPS**: Run `deployment/setup-vps.sh` → Configure secrets → Push to main branch
+**Infrastructure**: `make terraform-deploy` → Configure terraform.tfvars → `make deploy-terraform`  
+**Traditional**: Run `deployment/setup-vps.sh` → Configure secrets → Push to main branch
 
 ## Configuration
 

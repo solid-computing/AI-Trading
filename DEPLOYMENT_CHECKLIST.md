@@ -12,7 +12,16 @@ Quick checklist for setting up the AI Trading Bot. See [SETUP.md](./SETUP.md) fo
 - [ ] Obtained Telegram chat ID
 - [ ] Saved all credentials securely
 
-### 🖥️ VPS Setup
+### 🖥️ Infrastructure Setup
+
+#### Option A: Terraform (Recommended)
+- [ ] OVH Public Cloud account created
+- [ ] OVH API keys generated (https://api.ovh.com/createToken/)
+- [ ] Terraform installed (>= 1.0)
+- [ ] SSH key pair generated
+- [ ] `terraform/terraform.tfvars` configured
+
+#### Option B: Manual VPS Setup
 - [ ] VPS provisioned (minimum 2GB RAM, 20GB SSD)
 - [ ] SSH access configured
 - [ ] `deployment/setup-vps.sh` script executed
@@ -43,7 +52,16 @@ Quick checklist for setting up the AI Trading Bot. See [SETUP.md](./SETUP.md) fo
 
 ## 🚀 Deployment Steps
 
-### Manual Deployment
+### Infrastructure with Terraform (Recommended)
+- [ ] Copy `terraform/terraform.tfvars.example` to `terraform/terraform.tfvars`
+- [ ] Fill in OVH API credentials in terraform.tfvars
+- [ ] Generate SSH key pair if needed
+- [ ] Run `make terraform-deploy` to create infrastructure
+- [ ] Note down the public IP from Terraform outputs
+- [ ] Run `make deploy-terraform` to deploy application
+
+### Manual VPS Setup (Alternative)
+- [ ] Set up VPS manually using `deployment/setup-vps.sh`
 - [ ] Export environment variables locally
 - [ ] Run `make deploy`
 - [ ] Verify deployment on VPS

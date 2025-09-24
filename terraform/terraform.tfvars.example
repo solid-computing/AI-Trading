@@ -1,0 +1,53 @@
+# Example Terraform variables file for AI Trading Bot deployment
+# Copy this file to terraform.tfvars and fill in your actual values
+
+# OVH API Configuration
+# Get these from https://api.ovh.com/createToken/
+ovh_application_key    = "your_ovh_application_key"
+ovh_application_secret = "your_ovh_application_secret"
+ovh_consumer_key      = "your_ovh_consumer_key"
+ovh_project_id        = "your_ovh_project_id"
+
+# OpenStack credentials (usually same as OVH account)
+openstack_username = "your_ovh_username"
+openstack_password = "your_ovh_password"
+
+# Project Configuration
+project_name = "ai-trading-bot"
+environment  = "prod"  # dev, staging, or prod
+
+# Instance Configuration
+instance_flavor = "s1-2"  # s1-2 (2GB RAM), s1-4 (4GB RAM), s1-8 (8GB RAM), etc.
+ovh_region     = "GRA9"   # GRA9, SBG5, BHS5, WAW1, etc.
+
+# SSH Configuration
+ssh_public_key_path = "~/.ssh/id_rsa.pub"  # Path to your SSH public key
+deploy_user        = "freqtrade"
+
+# Security Configuration (be careful with these)
+allowed_ip_range     = "0.0.0.0/0"    # Restrict to your IP: "1.2.3.4/32"
+enable_freqtrade_ui  = false          # Enable FreqUI web interface (port 8080)
+enable_http_access   = false          # Enable HTTP access (port 80)
+enable_https_access  = false          # Enable HTTPS access (port 443)
+
+# Storage Configuration
+create_data_volume = true   # Create additional volume for persistent data
+data_volume_size   = 20     # Size in GB
+
+# Cost Optimization
+enable_monitoring = false   # OVH monitoring (additional cost)
+backup_enabled   = false    # Automatic backups (additional cost)
+
+# Examples for different environments:
+
+# Development environment (smaller instance)
+# instance_flavor = "s1-2"
+# environment = "dev"
+# enable_freqtrade_ui = true
+# allowed_ip_range = "your.ip.address/32"
+
+# Production environment (larger instance, more secure)
+# instance_flavor = "s1-4"
+# environment = "prod" 
+# enable_freqtrade_ui = false
+# allowed_ip_range = "your.office.ip.range/24"
