@@ -10,9 +10,13 @@ graph LR
     B1[Copy config<br/>Start bot<br/>Check logs] --> B
     C1[Deploy infrastructure<br/>Deploy application] --> C
     
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5  
-    style C fill:#e8f5e8
+    style A fill:#1565C0,stroke:#0D47A1,stroke-width:3px,color:#FFFFFF
+    style B fill:#7B1FA2,stroke:#4A148C,stroke-width:3px,color:#FFFFFF  
+    style C fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#FFFFFF
+    
+    style A1 fill:#42A5F5,stroke:#1976D2,stroke-width:2px,color:#FFFFFF
+    style B1 fill:#AB47BC,stroke:#8E24AA,stroke-width:2px,color:#FFFFFF
+    style C1 fill:#66BB6A,stroke:#4CAF50,stroke-width:2px,color:#000000
 ```
 
 ### Step 1: Configure Strategy
@@ -63,6 +67,8 @@ mindmap
       Multi-Modal Analysis
       Confidence Scoring
       Real-time Adaptation
+      
+  %%{init: {"mindmap": {"theme": "base", "themeVariables": {"primaryColor": "#1565C0", "primaryTextColor": "#FFFFFF", "primaryBorderColor": "#0D47A1", "lineColor": "#37474F", "secondaryColor": "#2E7D32", "tertiaryColor": "#D84315", "background": "#FAFAFA", "mainBkg": "#1565C0", "secondBkg": "#2E7D32", "tertiaryBkg": "#D84315"}}}}%%
 ```
 
 ### AI Configuration Options
@@ -83,8 +89,22 @@ graph TD
     D --> L[Large positions<br/>Wide stops]
     E --> M[AI auto-adjusts<br/>based on performance]
     
-    style E fill:#ff5722
-    style H fill:#4caf50
+    style A fill:#37474F,stroke:#263238,stroke-width:3px,color:#FFFFFF
+    style F fill:#37474F,stroke:#263238,stroke-width:3px,color:#FFFFFF
+    
+    style B fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#FFFFFF
+    style C fill:#1976D2,stroke:#1565C0,stroke-width:3px,color:#FFFFFF
+    style D fill:#D84315,stroke:#BF360C,stroke-width:3px,color:#FFFFFF
+    style E fill:#7B1FA2,stroke:#4A148C,stroke-width:4px,color:#FFFFFF
+    
+    style G fill:#FFB74D,stroke:#FFA726,stroke-width:2px,color:#000000
+    style H fill:#4CAF50,stroke:#388E3C,stroke-width:3px,color:#FFFFFF
+    style I fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#FFFFFF
+    
+    style J fill:#66BB6A,stroke:#4CAF50,stroke-width:2px,color:#000000
+    style K fill:#42A5F5,stroke:#2196F3,stroke-width:2px,color:#FFFFFF
+    style L fill:#FF8A65,stroke:#FF7043,stroke-width:2px,color:#000000
+    style M fill:#BA68C8,stroke:#9C27B0,stroke-width:2px,color:#FFFFFF
 ```
 
 ## 📊 AI Decision Examples
@@ -126,6 +146,8 @@ timeline
         AI Decision       : HOLD
                          : Wait for clarity
                          : Maintain positions
+                         
+  %%{init: {"timeline": {"theme": "base", "themeVariables": {"primaryColor": "#2E7D32", "primaryTextColor": "#FFFFFF", "primaryBorderColor": "#1B5E20", "lineColor": "#37474F", "secondaryColor": "#D84315", "tertiaryColor": "#1565C0", "background": "#FAFAFA", "taskBkgColor": "#2E7D32", "taskTextColor": "#FFFFFF", "gridColor": "#E0E0E0", "section0": "#4CAF50", "section1": "#F44336", "section2": "#FF9800", "section3": "#2196F3"}}}}%%
 ```
 
 ## 🔍 Monitoring & Troubleshooting
@@ -146,9 +168,17 @@ graph TD
     I -->|Yes| J[🔴 Check market conditions<br/>AI detected danger]
     I -->|No| K[Check logs for details]
     
-    style C fill:#4caf50
-    style H fill:#ff9800
-    style J fill:#f44336
+    style A fill:#37474F,stroke:#263238,stroke-width:3px,color:#FFFFFF
+    style B fill:#1976D2,stroke:#1565C0,stroke-width:3px,color:#FFFFFF
+    style C fill:#2E7D32,stroke:#1B5E20,stroke-width:4px,color:#FFFFFF
+    style D fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:#000000
+    style E fill:#1976D2,stroke:#1565C0,stroke-width:2px,color:#FFFFFF
+    style F fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#FFFFFF
+    style G fill:#1976D2,stroke:#1565C0,stroke-width:2px,color:#FFFFFF
+    style H fill:#FFA726,stroke:#FF9800,stroke-width:3px,color:#000000
+    style I fill:#1976D2,stroke:#1565C0,stroke-width:2px,color:#FFFFFF
+    style J fill:#E53935,stroke:#C62828,stroke-width:4px,color:#FFFFFF
+    style K fill:#5E35B1,stroke:#4527A0,stroke-width:2px,color:#FFFFFF
 ```
 
 ### Quick Status Check
@@ -217,6 +247,8 @@ journey
       Multi-pair Trading: 5: AI
       Advanced Risk Management: 5: AI
       Performance Analysis: 4: You, AI
+      
+  %%{init: {"journey": {"theme": "base", "themeVariables": {"primaryColor": "#1565C0", "primaryTextColor": "#FFFFFF", "primaryBorderColor": "#0D47A1", "lineColor": "#37474F", "secondaryColor": "#2E7D32", "tertiaryColor": "#D84315", "background": "#FAFAFA", "mainBkg": "#1565C0", "secondBkg": "#2E7D32", "tertiaryBkg": "#D84315", "journey1": "#4CAF50", "journey2": "#2196F3", "journey3": "#FF9800", "journey4": "#9C27B0", "journey5": "#F44336", "journeyInvertColor": "#FFFFFF"}}}}%%
 ```
 
 1. **Start Small** → Paper trade to understand AI behavior

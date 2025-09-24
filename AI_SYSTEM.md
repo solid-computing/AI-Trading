@@ -45,9 +45,15 @@ graph TB
         FT --> TG
     end
     
-    style DE fill:#e1f5fe
-    style AIS fill:#f3e5f5
-    style FT fill:#e8f5e8
+    style DE fill:#1565C0,stroke:#0D47A1,stroke-width:3px,color:#FFFFFF
+    style MA fill:#2E7D32,stroke:#1B5E20,stroke-width:2px,color:#FFFFFF
+    style SE fill:#7B1FA2,stroke:#4A148C,stroke-width:2px,color:#FFFFFF
+    style RM fill:#D84315,stroke:#BF360C,stroke-width:2px,color:#FFFFFF
+    style AIS fill:#F57C00,stroke:#E65100,stroke-width:3px,color:#FFFFFF
+    style TI fill:#FFA726,stroke:#FF8F00,stroke-width:2px,color:#000000
+    style FT fill:#388E3C,stroke:#2E7D32,stroke-width:3px,color:#FFFFFF
+    style EX fill:#0277BD,stroke:#01579B,stroke-width:2px,color:#FFFFFF
+    style TG fill:#00796B,stroke:#004D40,stroke-width:2px,color:#FFFFFF
 ```
 
 ## Core AI Components
@@ -87,10 +93,25 @@ graph LR
     RM1 --> DE1
     DE1 --> DE4
     
-    style MA1 fill:#ffeb3b
-    style SE1 fill:#2196f3
-    style RM1 fill:#4caf50
-    style DE1 fill:#ff5722
+    style MA1 fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#FFFFFF
+    style MA2 fill:#388E3C,stroke:#2E7D32,stroke-width:2px,color:#FFFFFF
+    style MA3 fill:#43A047,stroke:#388E3C,stroke-width:2px,color:#FFFFFF
+    style MA4 fill:#4CAF50,stroke:#43A047,stroke-width:2px,color:#000000
+    
+    style SE1 fill:#1565C0,stroke:#0D47A1,stroke-width:3px,color:#FFFFFF
+    style SE2 fill:#1976D2,stroke:#1565C0,stroke-width:2px,color:#FFFFFF
+    style SE3 fill:#1E88E5,stroke:#1976D2,stroke-width:2px,color:#FFFFFF
+    style SE4 fill:#2196F3,stroke:#1E88E5,stroke-width:2px,color:#000000
+    
+    style RM1 fill:#D84315,stroke:#BF360C,stroke-width:3px,color:#FFFFFF
+    style RM2 fill:#E64A19,stroke:#D84315,stroke-width:2px,color:#FFFFFF
+    style RM3 fill:#F4511E,stroke:#E64A19,stroke-width:2px,color:#FFFFFF
+    style RM4 fill:#FF5722,stroke:#F4511E,stroke-width:2px,color:#000000
+    
+    style DE1 fill:#7B1FA2,stroke:#4A148C,stroke-width:3px,color:#FFFFFF
+    style DE2 fill:#8E24AA,stroke:#7B1FA2,stroke-width:2px,color:#FFFFFF
+    style DE3 fill:#9C27B0,stroke:#8E24AA,stroke-width:2px,color:#FFFFFF
+    style DE4 fill:#AB47BC,stroke:#9C27B0,stroke-width:2px,color:#000000
 ```
 
 ### Key Features by Component
@@ -141,10 +162,33 @@ flowchart TD
     T -->|Yes| U[Execute Trade]
     T -->|No| V[Hold/Wait]
     
-    style E fill:#ffeb3b
-    style J fill:#2196f3
-    style N fill:#4caf50
-    style T fill:#ff5722
+    style A fill:#263238,stroke:#37474F,stroke-width:3px,color:#FFFFFF
+    style B fill:#2E7D32,stroke:#1B5E20,stroke-width:2px,color:#FFFFFF
+    style C fill:#1565C0,stroke:#0D47A1,stroke-width:2px,color:#FFFFFF
+    style D fill:#D84315,stroke:#BF360C,stroke-width:2px,color:#FFFFFF
+    
+    style E fill:#FFA000,stroke:#FF8F00,stroke-width:3px,color:#000000
+    style J fill:#1976D2,stroke:#1565C0,stroke-width:3px,color:#FFFFFF
+    style N fill:#388E3C,stroke:#2E7D32,stroke-width:3px,color:#FFFFFF
+    style T fill:#7B1FA2,stroke:#4A148C,stroke-width:3px,color:#FFFFFF
+    
+    style F fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#FFFFFF
+    style G fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#FFFFFF
+    style H fill:#FFB74D,stroke:#FFA726,stroke-width:2px,color:#000000
+    style I fill:#E53935,stroke:#C62828,stroke-width:3px,color:#FFFFFF
+    
+    style K fill:#66BB6A,stroke:#4CAF50,stroke-width:2px,color:#000000
+    style L fill:#EF5350,stroke:#F44336,stroke-width:2px,color:#FFFFFF
+    style M fill:#42A5F5,stroke:#2196F3,stroke-width:2px,color:#FFFFFF
+    
+    style O fill:#81C784,stroke:#66BB6A,stroke-width:2px,color:#000000
+    style P fill:#FFB74D,stroke:#FFA726,stroke-width:2px,color:#000000
+    style Q fill:#FFAB91,stroke:#FF8A65,stroke-width:2px,color:#000000
+    
+    style R fill:#1565C0,stroke:#0D47A1,stroke-width:4px,color:#FFFFFF
+    style S fill:#D32F2F,stroke:#B71C1C,stroke-width:4px,color:#FFFFFF
+    style U fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#FFFFFF
+    style V fill:#F57C00,stroke:#E65100,stroke-width:3px,color:#FFFFFF
 ```
 
 ## Configuration
@@ -177,7 +221,16 @@ graph LR
     D --> H[Large positions<br/>Wide stops<br/>High risk]
     E --> I[AI-adjusted<br/>Performance-based<br/>Adaptive risk]
     
-    style E fill:#ff5722
+    style A fill:#37474F,stroke:#263238,stroke-width:3px,color:#FFFFFF
+    style B fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#FFFFFF
+    style C fill:#1976D2,stroke:#1565C0,stroke-width:3px,color:#FFFFFF
+    style D fill:#D84315,stroke:#BF360C,stroke-width:3px,color:#FFFFFF
+    style E fill:#7B1FA2,stroke:#4A148C,stroke-width:3px,color:#FFFFFF
+    
+    style F fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#FFFFFF
+    style G fill:#2196F3,stroke:#1976D2,stroke-width:2px,color:#FFFFFF
+    style H fill:#FF5722,stroke:#E64A19,stroke-width:2px,color:#FFFFFF
+    style I fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:#FFFFFF
 ```
 
 ## Usage
@@ -236,9 +289,23 @@ graph TD
         D3 --> E3[Wait for better<br/>setup & higher<br/>confidence]
     end
     
-    style D1 fill:#4caf50
-    style D2 fill:#f44336
-    style D3 fill:#ff9800
+    style A1 fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#FFFFFF
+    style B1 fill:#1976D2,stroke:#1565C0,stroke-width:2px,color:#FFFFFF
+    style C1 fill:#388E3C,stroke:#2E7D32,stroke-width:2px,color:#FFFFFF
+    style D1 fill:#4CAF50,stroke:#388E3C,stroke-width:4px,color:#FFFFFF
+    style E1 fill:#66BB6A,stroke:#4CAF50,stroke-width:2px,color:#000000
+    
+    style A2 fill:#B71C1C,stroke:#D32F2F,stroke-width:3px,color:#FFFFFF
+    style B2 fill:#E64A19,stroke:#BF360C,stroke-width:2px,color:#FFFFFF
+    style C2 fill:#D32F2F,stroke:#B71C1C,stroke-width:2px,color:#FFFFFF
+    style D2 fill:#F44336,stroke:#D32F2F,stroke-width:4px,color:#FFFFFF
+    style E2 fill:#EF5350,stroke:#F44336,stroke-width:2px,color:#FFFFFF
+    
+    style A3 fill:#455A64,stroke:#37474F,stroke-width:3px,color:#FFFFFF
+    style B3 fill:#607D8B,stroke:#455A64,stroke-width:2px,color:#FFFFFF
+    style C3 fill:#546E7A,stroke:#455A64,stroke-width:2px,color:#FFFFFF
+    style D3 fill:#FF9800,stroke:#F57C00,stroke-width:4px,color:#000000
+    style E3 fill:#FFB74D,stroke:#FFA726,stroke-width:2px,color:#000000
 ```
 
 ## Testing
