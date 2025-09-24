@@ -1,0 +1,56 @@
+{
+    "ai_engine": {
+        "enabled": true,
+        "version": "1.0.0",
+        "risk_management": {
+            "risk_appetite": "dynamic",
+            "max_portfolio_risk": 0.05,
+            "max_position_risk": 0.02,
+            "volatility_adjustment": true,
+            "correlation_adjustment": true,
+            "emergency_exit_enabled": true
+        },
+        "sentiment_analysis": {
+            "enabled": true,
+            "sources": {
+                "social_media": true,
+                "news": true,
+                "fear_greed_index": true,
+                "market_metrics": true
+            },
+            "cache_duration_minutes": 15,
+            "confidence_threshold": 0.6
+        },
+        "market_analysis": {
+            "enabled": true,
+            "regime_detection": true,
+            "volatility_analysis": true,
+            "anomaly_detection": true,
+            "trend_analysis": true,
+            "volume_analysis": true
+        },
+        "decision_engine": {
+            "ai_confidence_threshold": 0.6,
+            "enable_sentiment_override": true,
+            "enable_market_regime_adaptation": true,
+            "enable_dynamic_parameters": true,
+            "emergency_conditions_enabled": true
+        },
+        "adaptive_parameters": {
+            "enabled": true,
+            "adaptation_frequency": "hourly",
+            "learning_enabled": true,
+            "max_history_size": 1000
+        }
+    },
+    "strategy_config": {
+        "base_strategy": "RsiMaStrategy",
+        "ai_enhanced": true,
+        "fallback_mode": "traditional",
+        "monitoring": {
+            "log_level": "INFO",
+            "performance_tracking": true,
+            "decision_logging": true
+        }
+    }
+}

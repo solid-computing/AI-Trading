@@ -1,15 +1,36 @@
-# Freqtrade Trading Bot
+# AI-Enhanced Freqtrade Trading Bot
 
-Automated cryptocurrency trading bot for Binance with complete CI/CD and VPS deployment.
+Automated cryptocurrency trading bot for Binance with **Advanced AI Reasoning** capabilities, complete CI/CD and VPS deployment.
+
+## 🤖 AI-Enhanced Features
+
+This project integrates cutting-edge AI reasoning into FreqTrade to leverage modern AI advancements:
+
+- **🧠 Market Regime Detection**: AI identifies bull, bear, sideways, volatile, and crash market conditions
+- **📊 Multi-Modal Sentiment Analysis**: Combines social media, news, and market metrics
+- **⚖️ Dynamic Risk Management**: AI-optimized position sizing and stop-loss levels
+- **🎯 Real-time Decision Making**: AI analyzes market conditions and adapts strategy in real-time
+- **🚨 Emergency Detection**: AI monitors for market crashes and anomalies
+- **📈 Adaptive Parameters**: Strategy parameters automatically adjust to market conditions
 
 ## Architecture
 
 ```mermaid
 graph TB
-    subgraph "Trading System"
+    subgraph "AI-Enhanced Trading System"
         A[Freqtrade Bot] --> B[Binance API]
         A --> C[Telegram Bot]
-        A --> D[RsiMaStrategy]
+        A --> D[AI-Enhanced Strategy]
+        D --> AI[AI Decision Engine]
+    end
+    
+    subgraph "AI Intelligence Layer"
+        AI --> MA[Market Analyzer]
+        AI --> SE[Sentiment Engine]
+        AI --> RM[Risk Manager]
+        MA --> |Regime Detection| AI
+        SE --> |Sentiment Analysis| AI
+        RM --> |Position Sizing| AI
     end
     
     subgraph "Infrastructure"
@@ -22,17 +43,29 @@ graph TB
     subgraph "Monitoring"
         C --> I[Telegram Notifications]
         A --> J[Logs & Metrics]
+        AI --> K[AI Decision Logs]
     end
     
-    B -.-> K[Market Data]
-    D --> L[Technical Indicators]
+    B -.-> L[Market Data]
+    MA --> M[Technical Indicators]
+    SE --> N[Market Psychology]
 ```
 
 ## Features
 
-- **Exchange**: Binance Spot | **Notifications**: Telegram | **Strategy**: RSI+MA+MACD+Volume
+### 🤖 AI-Powered Trading
+- **AI-Enhanced Strategy**: Traditional RSI+MA enhanced with AI reasoning
+- **Market Regime Adaptation**: Different behavior in bull/bear/volatile markets  
+- **Sentiment Integration**: Social media, news, and market psychology analysis
+- **Dynamic Risk Management**: AI-optimized position sizing and stop losses
+- **Emergency Detection**: Automatic exits during market crashes or anomalies
+- **Real-time Learning**: AI adapts parameters based on market conditions
+
+### 🏗️ Infrastructure & Deployment
+- **Exchange**: Binance Spot | **Notifications**: Telegram | **Strategy**: AI-Enhanced RSI+MA
 - **Local**: Docker Compose | **Production**: systemd service | **CI/CD**: CircleCI pipeline
 - **Infrastructure**: Terraform for OVH Cloud | **Deployment**: Automated with make commands
+- **AI Components**: Market Analyzer, Sentiment Engine, Risk Manager, Decision Engine
 
 ## Quick Start
 

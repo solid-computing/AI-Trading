@@ -86,13 +86,40 @@ def validate_strategies():
     print("\n📊 Strategy Files:")
     
     strategy_files = [
-        "user_data/strategies/RsiMaStrategy.py"
+        "user_data/strategies/RsiMaStrategy.py",
+        "user_data/strategies/AIEnhancedRsiMaStrategy.py"
     ]
     
     all_good = True
     for strategy_file in strategy_files:
         if not validate_python_syntax(strategy_file):
             all_good = False
+    
+    return all_good
+
+def validate_ai_components():
+    """Validate AI engine components"""
+    print("\n🧠 AI Engine Components:")
+    
+    ai_files = [
+        "user_data/ai_engine/__init__.py",
+        "user_data/ai_engine/market_analyzer.py",
+        "user_data/ai_engine/sentiment_engine.py", 
+        "user_data/ai_engine/risk_manager.py",
+        "user_data/ai_engine/decision_engine.py"
+    ]
+    
+    all_good = True
+    for ai_file in ai_files:
+        if not validate_python_syntax(ai_file):
+            all_good = False
+    
+    # Validate AI config
+    if os.path.exists("user_data/ai_config.json"):
+        if not validate_json_file("user_data/ai_config.json"):
+            all_good = False
+    else:
+        print("⚠️ user_data/ai_config.json (optional)")
     
     return all_good
 
@@ -201,6 +228,7 @@ def validate_structure():
     required_dirs = [
         "user_data",
         "user_data/strategies",
+        "user_data/ai_engine",
         "deployment",
         "scripts",
         ".circleci",
@@ -228,6 +256,7 @@ def main():
         validate_docker_files(),
         validate_config_files(),
         validate_strategies(),
+        validate_ai_components(),
         validate_deployment_files(),
         validate_ci_cd(),
         validate_documentation(),
