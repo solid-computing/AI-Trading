@@ -1,0 +1,7 @@
+freqtrade[all]==2024.1
+# Additional dependencies for strategies and analysis
+pandas>=1.5.0
+numpy>=1.21.0
+ta-lib>=0.4.24
+python-telegram-bot>=20.0
+ccxt>=4.0.0
