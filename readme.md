@@ -43,6 +43,8 @@ graph LR
     F --> G[CircleCI Auto-Deploy]
 ```
 
+**📋 [Complete Setup Guide](./SETUP.md)** | **✅ [Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)**
+
 **Local**: `make quick-start` or `docker-compose up -d`  
 **VPS**: Run `deployment/setup-vps.sh` → Configure secrets → Push to main branch
 
@@ -169,3 +171,9 @@ Always test with dry-run mode and small amounts.
 ## Support
 
 📚 [Freqtrade Docs](https://www.freqtrade.io/) | 💬 [Discord](https://discord.gg/p7nuUNVfP7) | 🐛 GitHub Issues
+
+## 📋 Setup Documentation
+
+- **[SETUP.md](./SETUP.md)** - Complete manual setup guide with step-by-step instructions
+- **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Quick checklist for deployment
+- **[.env.example](./.env.example)** - Environment variables template
