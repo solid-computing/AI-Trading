@@ -39,21 +39,24 @@ graph TB
 ```mermaid
 graph LR
     A[Local Development] --> B[docker-compose up -d]
-    C[Infrastructure] --> D[make terraform-deploy]
-    D --> E[Configure terraform.tfvars]
-    E --> F[make deploy-terraform]
     
-    G[Traditional VPS] --> H[./deployment/setup-vps.sh]
-    H --> I[Configure secrets]
-    I --> J[git push origin main]
-    J --> K[CircleCI Auto-Deploy]
+    C[Fully Automated] --> D[Configure CircleCI]
+    D --> E[git push origin main]
+    E --> F[Auto: Infrastructure + Deploy]
+    
+    G[Manual Control] --> H[make terraform-deploy]
+    H --> I[make deploy-terraform]
+    
+    J[Traditional VPS] --> K[./deployment/setup-vps.sh]
+    K --> L[Configure CircleCI]
+    L --> M[git push → Auto Deploy]
 ```
 
 **📋 [Complete Setup Guide](./SETUP.md)** | **✅ [Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)** | **🏗️ [Terraform Guide](./terraform/README.md)**
 
-**Local**: `make quick-start` or `docker-compose up -d`  
-**Infrastructure**: `make terraform-deploy` → Configure terraform.tfvars → `make deploy-terraform`  
-**Traditional**: Run `deployment/setup-vps.sh` → Configure secrets → Push to main branch
+**Fully Automated**: Configure CircleCI → `git push origin main` → Everything automatic!  
+**Manual Control**: `make terraform-deploy` → `make deploy-terraform`  
+**Local Dev**: `make quick-start` or `docker-compose up -d`
 
 ## Configuration
 
@@ -121,16 +124,30 @@ graph LR
 graph LR
     A[Git Push] --> B[CircleCI]
     B --> C[Lint & Test]
-    B --> D[Backtest]
-    B --> E[Build Docker]
-    C --> F[Deploy to VPS]
-    D --> F
-    E --> F
-    F --> G[Systemd Restart]
+    B --> D[Terraform Validate]
+    B --> E[Backtest]
+    B --> F[Build Docker]
     
-    style F fill:#e1f5fe
-    style G fill:#e8f5e8
+    C --> G[Terraform Plan]
+    D --> G
+    E --> G
+    F --> G
+    
+    G --> H[Terraform Apply]
+    H --> I[Deploy Application]
+    I --> J[Service Health Check]
+    
+    style G fill:#fff3e0
+    style H fill:#e1f5fe
+    style I fill:#e8f5e8
+    style J fill:#f3e5f5
 ```
+
+**Pipeline Features:**
+- **Infrastructure as Code**: Terraform validates and provisions OVH infrastructure
+- **Automated Testing**: Linting, backtesting, and Docker builds
+- **Zero-Touch Deployment**: Complete infrastructure + application deployment
+- **Health Monitoring**: Automatic service verification and rollback capability
 
 ## Monitoring
 

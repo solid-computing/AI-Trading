@@ -9,6 +9,11 @@ executors:
     docker:
       - image: cimg/python:3.10
     working_directory: ~/project
+  
+  terraform-executor:
+    docker:
+      - image: hashicorp/terraform:1.6
+    working_directory: ~/project
 
 jobs:
   lint-and-test:
@@ -140,15 +145,129 @@ jobs:
             export TELEGRAM_TOKEN="${TELEGRAM_TOKEN}"
             export TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID}"
             
-            # Run deployment script
-            chmod +x deployment/deploy.sh
-            ./deployment/deploy.sh
+            # Run deployment script (works with both manual and Terraform-provisioned VPS)
+            chmod +x deployment/deploy-terraform.sh
+            ./deployment/deploy-terraform.sh
+
+  terraform-validate:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - run:
+          name: Terraform Format Check
+          command: |
+            cd terraform
+            terraform fmt -check=true -diff=true
+      - run:
+          name: Terraform Validate
+          command: |
+            cd terraform
+            terraform init -backend=false
+            terraform validate
+
+  terraform-plan:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - run:
+          name: Create terraform.tfvars from environment
+          command: |
+            cd terraform
+            cat > terraform.tfvars << EOF
+            ovh_application_key    = "${OVH_APPLICATION_KEY}"
+            ovh_application_secret = "${OVH_APPLICATION_SECRET}"
+            ovh_consumer_key      = "${OVH_CONSUMER_KEY}"
+            ovh_project_id        = "${OVH_PROJECT_ID}"
+            openstack_username     = "${OPENSTACK_USERNAME}"
+            openstack_password     = "${OPENSTACK_PASSWORD}"
+            project_name          = "ai-trading-bot-ci"
+            environment           = "prod"
+            ssh_public_key_path   = "/tmp/ssh_public_key.pub"
+            EOF
+      - run:
+          name: Create SSH public key from environment
+          command: |
+            echo "${SSH_PUBLIC_KEY}" > /tmp/ssh_public_key.pub
+      - run:
+          name: Terraform Plan
+          command: |
+            cd terraform
+            terraform init
+            terraform plan -out=tfplan
+      - persist_to_workspace:
+          root: terraform
+          paths:
+            - tfplan
+            - .terraform
+            - terraform.tfvars
+
+  terraform-apply:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: terraform
+      - run:
+          name: Create SSH public key from environment
+          command: |
+            echo "${SSH_PUBLIC_KEY}" > /tmp/ssh_public_key.pub
+      - run:
+          name: Terraform Apply
+          command: |
+            cd terraform
+            terraform apply -auto-approve tfplan
+      - run:
+          name: Export Terraform outputs to environment
+          command: |
+            cd terraform
+            # Export outputs for the deploy job
+            echo "export OVH_HOST=$(terraform output -raw public_ip)" >> $BASH_ENV
+            echo "export OVH_USER=$(terraform output -raw deployment_vars | grep OVH_USER | cut -d'\"' -f4)" >> $BASH_ENV
+      - persist_to_workspace:
+          root: terraform
+          paths:
+            - terraform.tfstate
+            - .terraform
+
+  terraform-destroy:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: terraform
+      - run:
+          name: Create terraform.tfvars from environment
+          command: |
+            cd terraform
+            cat > terraform.tfvars << EOF
+            ovh_application_key    = "${OVH_APPLICATION_KEY}"
+            ovh_application_secret = "${OVH_APPLICATION_SECRET}"
+            ovh_consumer_key      = "${OVH_CONSUMER_KEY}"
+            ovh_project_id        = "${OVH_PROJECT_ID}"
+            openstack_username     = "${OPENSTACK_USERNAME}"
+            openstack_password     = "${OPENSTACK_PASSWORD}"
+            project_name          = "ai-trading-bot-ci"
+            environment           = "prod"
+            ssh_public_key_path   = "/tmp/ssh_public_key.pub"
+            EOF
+      - run:
+          name: Create SSH public key from environment
+          command: |
+            echo "${SSH_PUBLIC_KEY}" > /tmp/ssh_public_key.pub
+      - run:
+          name: Terraform Destroy
+          command: |
+            cd terraform
+            terraform init
+            terraform destroy -auto-approve
 
 workflows:
   version: 2
   build-test-deploy:
     jobs:
       - lint-and-test:
+          context: freqtrade-secrets
+      - terraform-validate:
           context: freqtrade-secrets
       - backtest:
           context: freqtrade-secrets
@@ -157,10 +276,20 @@ workflows:
       - build-docker:
           requires:
             - lint-and-test
-      - deploy:
+      - terraform-plan:
           context: freqtrade-secrets
           requires:
+            - terraform-validate
             - lint-and-test
+          filters:
+            branches:
+              only:
+                - main
+                - master
+      - terraform-apply:
+          context: freqtrade-secrets
+          requires:
+            - terraform-plan
             - backtest
             - build-docker
           filters:
@@ -168,3 +297,54 @@ workflows:
               only:
                 - main
                 - master
+      - deploy:
+          context: freqtrade-secrets
+          requires:
+            - terraform-apply
+          filters:
+            branches:
+              only:
+                - main
+                - master
+
+  # Optional workflow for infrastructure management
+  infrastructure-only:
+    jobs:
+      - terraform-validate:
+          context: freqtrade-secrets
+      - terraform-plan:
+          context: freqtrade-secrets
+          requires:
+            - terraform-validate
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-.*/
+      - terraform-apply:
+          context: freqtrade-secrets
+          requires:
+            - terraform-plan
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-.*/
+      - hold-for-destroy:
+          type: approval
+          requires:
+            - terraform-apply
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-.*/
+      - terraform-destroy:
+          context: freqtrade-secrets
+          requires:
+            - hold-for-destroy
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-.*/
