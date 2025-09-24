@@ -143,6 +143,7 @@ def validate_documentation():
         ("readme.md", True),
         ("requirements.txt", True),
         (".gitignore", True),
+        ("TERRAFORM.md", True),
     ]
     
     all_good = True
@@ -163,6 +164,7 @@ def validate_terraform():
         ("terraform/cloud-init.yml", True),
         ("terraform/terraform.tfvars.example", True),
         ("terraform/deploy.sh", True),
+        ("terraform/quick-start.sh", True),
         ("terraform/README.md", True),
     ]
     
