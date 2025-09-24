@@ -1,0 +1,147 @@
+#cloud-config
+# Cloud-init configuration for AI Trading Bot VPS setup
+
+# Update and upgrade system packages
+package_update: true
+package_upgrade: true
+
+# Install required packages
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - software-properties-common
+  - ufw
+  - htop
+  - git
+  - python3
+  - python3-pip
+  - unzip
+
+# Create users
+users:
+  - name: ${deploy_user}
+    groups: sudo, docker
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - $${SSH_PUBLIC_KEY}
+
+# Run commands during first boot
+runcmd:
+  # Install Docker
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  - echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  - apt-get update
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ${deploy_user}
+  
+  # Set up application directory
+  - mkdir -p /home/${deploy_user}/AI-Trading
+  - chown -R ${deploy_user}:${deploy_user} /home/${deploy_user}/AI-Trading
+  
+  # Create systemd service directory
+  - mkdir -p /etc/systemd/system
+  
+  # Set up firewall
+  - ufw allow ssh
+  - ufw allow 8080/tcp  # FreqUI (optional)
+  - ufw --force enable
+  
+  # Create log directory
+  - mkdir -p /var/log/freqtrade
+  - chown ${deploy_user}:${deploy_user} /var/log/freqtrade
+  
+  # Create environment template
+  - |
+    cat > /home/${deploy_user}/.env.template << 'EOF'
+    # Binance API credentials
+    BINANCE_API_KEY=your_binance_api_key_here
+    BINANCE_API_SECRET=your_binance_api_secret_here
+    
+    # Telegram bot credentials
+    TELEGRAM_TOKEN=your_telegram_bot_token_here
+    TELEGRAM_CHAT_ID=your_telegram_chat_id_here
+    EOF
+  - chown ${deploy_user}:${deploy_user} /home/${deploy_user}/.env.template
+  
+  # Mount data volume if present
+  - |
+    if lsblk | grep -q vdb; then
+      # Format and mount additional volume
+      mkfs.ext4 /dev/vdb
+      mkdir -p /data
+      mount /dev/vdb /data
+      echo '/dev/vdb /data ext4 defaults 0 2' >> /etc/fstab
+      chown -R ${deploy_user}:${deploy_user} /data
+      
+      # Create symlinks for persistent data
+      ln -sf /data/user_data /home/${deploy_user}/AI-Trading/user_data_persistent
+      ln -sf /data/logs /var/log/freqtrade_persistent
+    fi
+
+# Write files
+write_files:
+  - path: /etc/systemd/system/freqtrade.service.template
+    content: |
+      [Unit]
+      Description=Freqtrade Trading Bot
+      After=docker.service
+      Requires=docker.service
+      
+      [Service]
+      Type=exec
+      User=${deploy_user}
+      Group=${deploy_user}
+      WorkingDirectory=/home/${deploy_user}/AI-Trading
+      Environment=HOME=/home/${deploy_user}
+      EnvironmentFile=/home/${deploy_user}/.env
+      ExecStart=/usr/bin/docker-compose -f docker-compose.prod.yml up
+      ExecStop=/usr/bin/docker-compose -f docker-compose.prod.yml down
+      Restart=always
+      RestartSec=10
+      
+      [Install]
+      WantedBy=multi-user.target
+    owner: root:root
+    permissions: '0644'
+
+  - path: /home/${deploy_user}/setup-complete.txt
+    content: |
+      AI Trading Bot VPS Setup Complete
+      Created by Terraform on $(date)
+      
+      Next steps:
+      1. Deploy your application code
+      2. Configure your .env file with API keys
+      3. Start the freqtrade service
+      
+      Useful commands:
+      - sudo systemctl status freqtrade
+      - sudo systemctl start freqtrade
+      - sudo systemctl stop freqtrade
+      - docker-compose logs -f
+    owner: ${deploy_user}:${deploy_user}
+    permissions: '0644'
+
+# Final message
+final_message: |
+  AI Trading Bot VPS setup completed successfully!
+  Instance is ready for deployment.
+  
+  Connect via SSH: ssh ${deploy_user}@$public_ip
+  
+  The instance has been configured with:
+  - Docker and Docker Compose
+  - User: ${deploy_user} with sudo access
+  - Firewall configured
+  - Application directory: /home/${deploy_user}/AI-Trading
+  
+  Next steps:
+  1. Deploy your application
+  2. Configure environment variables
+  3. Start the trading bot service

@@ -102,6 +102,7 @@ def validate_deployment_files():
     
     deployment_files = [
         ("deployment/deploy.sh", True),
+        ("deployment/deploy-terraform.sh", True),
         ("deployment/setup-vps.sh", True),
         ("deployment/freqtrade.service", True),
     ]
@@ -142,12 +143,54 @@ def validate_documentation():
         ("readme.md", True),
         ("requirements.txt", True),
         (".gitignore", True),
+        ("TERRAFORM.md", True),
     ]
     
     all_good = True
     for filepath, required in files:
         if not check_file_exists(filepath, required):
             all_good = False
+    
+    return all_good
+
+def validate_terraform():
+    """Validate Terraform infrastructure files"""
+    print("\n🏗️ Terraform Infrastructure:")
+    
+    terraform_files = [
+        ("terraform/main.tf", True),
+        ("terraform/variables.tf", True),
+        ("terraform/outputs.tf", True),
+        ("terraform/cloud-init.yml", True),
+        ("terraform/terraform.tfvars.example", True),
+        ("terraform/deploy.sh", True),
+        ("terraform/quick-start.sh", True),
+        ("terraform/README.md", True),
+    ]
+    
+    all_good = True
+    for filepath, required in terraform_files:
+        if not check_file_exists(filepath, required):
+            all_good = False
+        elif filepath.endswith('.sh'):
+            # Check if shell script is executable
+            if os.access(filepath, os.X_OK):
+                print(f"  ✅ {filepath} is executable")
+            else:
+                print(f"  ⚠️ {filepath} is not executable (run: chmod +x {filepath})")
+    
+    # Check if terraform directory exists
+    if os.path.isdir("terraform"):
+        print("  ✅ terraform/ directory exists")
+        
+        # Check for terraform.tfvars (should not exist in repo)
+        if os.path.exists("terraform/terraform.tfvars"):
+            print("  ⚠️ terraform/terraform.tfvars exists (should be in .gitignore)")
+        else:
+            print("  ✅ terraform.tfvars not in repository (good)")
+    else:
+        print("  ❌ terraform/ directory missing")
+        all_good = False
     
     return all_good
 
@@ -160,7 +203,8 @@ def validate_structure():
         "user_data/strategies",
         "deployment",
         "scripts",
-        ".circleci"
+        ".circleci",
+        "terraform"
     ]
     
     all_good = True
@@ -187,6 +231,7 @@ def main():
         validate_deployment_files(),
         validate_ci_cd(),
         validate_documentation(),
+        validate_terraform(),
     ]
     
     # Summary
@@ -197,7 +242,8 @@ def main():
         print("1. Set up your API keys in CircleCI Context 'freqtrade-secrets'")
         print("2. Test locally with: docker-compose up -d")
         print("3. Check logs with: docker-compose logs -f freqtrade")
-        print("4. Deploy to VPS via CI/CD or manually")
+        print("4. Deploy infrastructure: make terraform-deploy")
+        print("5. Deploy application: make deploy-terraform")
         return 0
     else:
         print("❌ Some validations failed. Please fix the issues above.")

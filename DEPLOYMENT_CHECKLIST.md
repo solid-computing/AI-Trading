@@ -12,7 +12,16 @@ Quick checklist for setting up the AI Trading Bot. See [SETUP.md](./SETUP.md) fo
 - [ ] Obtained Telegram chat ID
 - [ ] Saved all credentials securely
 
-### 🖥️ VPS Setup
+### 🖥️ Infrastructure Setup
+
+#### Option A: Terraform (Recommended)
+- [ ] OVH Public Cloud account created
+- [ ] OVH API keys generated (https://api.ovh.com/createToken/)
+- [ ] Terraform installed (>= 1.0)
+- [ ] SSH key pair generated
+- [ ] `terraform/terraform.tfvars` configured
+
+#### Option B: Manual VPS Setup
 - [ ] VPS provisioned (minimum 2GB RAM, 20GB SSD)
 - [ ] SSH access configured
 - [ ] `deployment/setup-vps.sh` script executed
@@ -28,6 +37,17 @@ Quick checklist for setting up the AI Trading Bot. See [SETUP.md](./SETUP.md) fo
   - [ ] `BINANCE_API_SECRET`
   - [ ] `TELEGRAM_TOKEN`
   - [ ] `TELEGRAM_CHAT_ID`
+  
+  **For Terraform (Recommended):**
+  - [ ] `OVH_APPLICATION_KEY`
+  - [ ] `OVH_APPLICATION_SECRET`
+  - [ ] `OVH_CONSUMER_KEY`
+  - [ ] `OVH_PROJECT_ID`
+  - [ ] `OPENSTACK_USERNAME`
+  - [ ] `OPENSTACK_PASSWORD`
+  - [ ] `SSH_PUBLIC_KEY`
+  
+  **For Manual VPS (Alternative):**
   - [ ] `OVH_HOST`
   - [ ] `OVH_USER`
   - [ ] `OVH_SSH_KEY` (base64 encoded)
@@ -43,15 +63,28 @@ Quick checklist for setting up the AI Trading Bot. See [SETUP.md](./SETUP.md) fo
 
 ## 🚀 Deployment Steps
 
-### Manual Deployment
-- [ ] Export environment variables locally
-- [ ] Run `make deploy`
-- [ ] Verify deployment on VPS
-
-### Automatic Deployment
+### Fully Automated with CircleCI (Recommended)
+- [ ] Configure CircleCI with all required environment variables above
 - [ ] Push changes to main branch
-- [ ] Monitor CircleCI pipeline
-- [ ] Verify deployment success
+- [ ] Monitor CircleCI pipeline (infrastructure → build → deploy)
+- [ ] Verify deployment success in CircleCI and VPS
+
+### Manual Infrastructure + Auto Deployment  
+- [ ] Copy `terraform/terraform.tfvars.example` to `terraform/terraform.tfvars`
+- [ ] Fill in OVH API credentials in terraform.tfvars
+- [ ] Run `make terraform-deploy` to create infrastructure
+- [ ] Configure CircleCI with deployment credentials only
+- [ ] Push to main branch for automatic application deployment
+
+### Manual VPS + Auto Deployment (Alternative)
+- [ ] Set up VPS manually using `deployment/setup-vps.sh`
+- [ ] Configure CircleCI with VPS credentials
+- [ ] Push to main branch for automatic application deployment
+
+### Fully Manual (Development/Testing)
+- [ ] Run `make terraform-deploy` or set up VPS manually
+- [ ] Run `make deploy-terraform` or `make deploy`
+- [ ] Verify deployment manually
 
 ## ✅ Post-Deployment Verification
 
