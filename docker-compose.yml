@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  freqtrade:
+    build: .
+    container_name: freqtrade-bot
+    restart: unless-stopped
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./config.dryrun.json:/freqtrade/config.dryrun.json
+      - ./config.live.template.json:/freqtrade/config.live.template.json
+      - ./pairs.json:/freqtrade/pairs.json
+    environment:
+      - FREQTRADE_ENV=dryrun
+    command: >
+      freqtrade trade
+      --config config.dryrun.json
+      --strategy RsiMaStrategy
+    ports:
+      - "8080:8080"
+    networks:
+      - freqtrade-network
+
+  # Optional: FreqUI for web interface
+  freqtrade-ui:
+    image: freqtradeorg/freqtrade:stable
+    container_name: freqtrade-ui
+    restart: unless-stopped
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./config.dryrun.json:/freqtrade/config.dryrun.json
+    command: >
+      freqtrade webserver
+      --config config.dryrun.json
+    ports:
+      - "8081:8080"
+    networks:
+      - freqtrade-network
+    depends_on:
+      - freqtrade
+
+networks:
+  freqtrade-network:
+    driver: bridge

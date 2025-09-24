@@ -1,0 +1,28 @@
+[Unit]
+Description=Freqtrade Trading Bot
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=freqtrade
+Group=freqtrade
+WorkingDirectory=/home/freqtrade/AI-Trading
+ExecStartPre=/usr/bin/docker-compose -f docker-compose.prod.yml down
+ExecStart=/usr/bin/docker-compose -f docker-compose.prod.yml up
+ExecStop=/usr/bin/docker-compose -f docker-compose.prod.yml down
+Restart=always
+RestartSec=10
+
+# Environment file with secrets
+EnvironmentFile=/home/freqtrade/.env
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/freqtrade/AI-Trading
+
+[Install]
+WantedBy=multi-user.target
