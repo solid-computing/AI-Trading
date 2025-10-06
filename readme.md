@@ -201,3 +201,17 @@ Always test with dry-run mode and small amounts.
 - **[SETUP.md](./SETUP.md)** - Complete manual setup guide with step-by-step instructions
 - **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Quick checklist for deployment
 - **[.env.example](./.env.example)** - Environment variables template
+
+## 📄 End User Documentation
+
+- **[User Guide](./docs/USER_GUIDE.md)** - Comprehensive guide for end users
+  - How to use the bot
+  - Configuration and settings
+  - Monitoring and troubleshooting
+  - **[PDF Version](./docs/pdf/AI_Trading_Bot-User_Guide.pdf)** (generate with `make generate-pdf`)
+  
+- **[Technical Architecture](./docs/TECHNICAL_ARCHITECTURE.md)** - How it works behind the scenes
+  - System architecture and components
+  - Trading strategy engine
+  - Infrastructure and deployment
+  - **[PDF Version](./docs/pdf/AI_Trading_Bot-Technical_Architecture.pdf)** (generate with `make generate-pdf`)

@@ -148,3 +148,6 @@ terraform/terraform.tfvars
 terraform/tfplan
 terraform/*.tfplan
 terraform/crash.log
+
+# Generated PDFs (regenerate with 'make generate-pdf')
+docs/pdf/

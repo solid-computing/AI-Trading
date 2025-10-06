@@ -1,7 +1,7 @@
 # Makefile for Freqtrade Trading Bot
 # Provides convenient commands for development, testing, and deployment
 
-.PHONY: help validate build up down logs clean test lint deploy deploy-terraform terraform-init terraform-plan terraform-apply terraform-destroy terraform-output terraform-deploy setup-telegram
+.PHONY: help validate build up down logs clean test lint deploy deploy-terraform terraform-init terraform-plan terraform-apply terraform-destroy terraform-output terraform-deploy setup-telegram generate-pdf
 
 # Default target
 help:
@@ -36,11 +36,15 @@ help:
 	@echo "  terraform-output  - Show Terraform outputs"
 	@echo "  terraform-destroy - Destroy Terraform infrastructure"
 	@echo ""
+	@echo "Documentation:"
+	@echo "  generate-pdf      - Generate PDF documentation for end users"
+	@echo ""
 	@echo "Examples:"
 	@echo "  make validate"
 	@echo "  make up"
 	@echo "  make logs"
 	@echo "  make setup-telegram TOKEN=your_bot_token"
+	@echo "  make generate-pdf"
 
 # Validation
 validate:
@@ -162,3 +166,9 @@ quick-start: validate build up
 	@echo "🎉 Quick start complete!"
 	@echo "📋 Check logs: make logs"
 	@echo "🛑 Stop bot: make down"
+
+# Documentation
+generate-pdf:
+	@echo "📄 Generating PDF documentation..."
+	@chmod +x scripts/generate-pdf.sh
+	@./scripts/generate-pdf.sh
