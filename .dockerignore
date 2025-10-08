@@ -1,0 +1,67 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!requirements.txt
+docs/
+README.md
+SETUP.md
+DEPLOYMENT_CHECKLIST.md
+TERRAFORM.md
+REMAINING_WORK.md
+
+# CI/CD
+.circleci/
+
+# Infrastructure
+terraform/
+
+# Deployment scripts (not needed in container)
+deployment/
+
+# Scripts (not needed in container)
+scripts/
+
+# Development
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Logs and data (will be mounted as volumes)
+user_data/logs/
+user_data/backtest_results/
+user_data/plot/
+user_data/hyperopt_results/
+user_data/data/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Secrets and live config (mounted as volumes or env vars)
+config.live.json
+.env
+
+# Docker
+.docker/
+docker-compose*.yml
+Dockerfile
+
+# Makefiles and CI config
+Makefile
